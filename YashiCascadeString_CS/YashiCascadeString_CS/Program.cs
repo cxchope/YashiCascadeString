@@ -10,8 +10,9 @@ namespace YashiCascadeString_CS
     {
         static void Main(string[] args)
         {
-            String name = "Yashi Cascade String Data Format";
-            
+            Index i = new Index();
+            i.args = args;
+            i.start();
         }
     }
 }
