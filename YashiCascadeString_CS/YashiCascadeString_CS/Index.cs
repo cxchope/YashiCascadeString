@@ -29,7 +29,11 @@ namespace YashiCascadeString_CS
                     Demo d = new Demo();
                     g.indic = d.test1();
                     string r = g.start();
+                    Console.WriteLine("=============");
                     Console.WriteLine(r);
+                    Console.WriteLine("=============");
+                    g.formatoutput = true;
+                    Console.WriteLine(g.start());
                 }
                 else if (args[0] == "--analysis") //String->Array
                 {
