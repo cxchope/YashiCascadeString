@@ -11,8 +11,14 @@ namespace YashiCascadeString_CS
     {
         private Dictionary<string, Object> returnvalue;
         public string instring;
+        public string indentstart = "[";
+        public string indentend = "]";
+        public string indentdic = ":";
+
         public Dictionary<string, Object> start()
         {
+            //Console.WriteLine("String=" + instring);
+
             return returnvalue;
         }
     }

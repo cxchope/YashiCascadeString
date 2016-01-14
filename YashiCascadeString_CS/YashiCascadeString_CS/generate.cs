@@ -26,7 +26,7 @@ namespace YashiCascadeString_CS
             convert(indic, "main");
             return returnvalue + "@";
         }
-
+        
         private void convert(Object cObj, string dkey)
         {
             Type nowType = cObj.GetType();
@@ -36,6 +36,18 @@ namespace YashiCascadeString_CS
                 ArrayList nowArr = (ArrayList)cObj;
                 for (int j = 0; j < nowArr.Count; j++)
                 {
+                    if (j == 0)
+                    {
+                        if (formatoutput)
+                        {
+                            string ns = dkey;
+                            returnvalue += format(ns+"(Array):", null);
+                        }
+                        else
+                        {
+                            returnvalue = returnvalue + indentstart + indent + indentdic + indentdic + dkey + indentend;
+                        }
+                    }
                     Object childObj = nowArr[j];
                     convert(childObj, null);
                 }
@@ -82,7 +94,7 @@ namespace YashiCascadeString_CS
         //创建头
         private string pre()
         {
-            //5位格式代码，5位版本代码，1位缩进起始标记，1位缩进结束标记，1位字典区分标记
+            //5位格式代码，5位版本代码，1位缩进起始标记，1位缩进结束标记，1位区分标记
             return "YCSDF10000" + indentstart + indentend + indentdic + "@";
         }
 
@@ -96,11 +108,11 @@ namespace YashiCascadeString_CS
             }
             if (dkey == null)
             {
-                returnvalue += nowStr;
+                returnvalue = returnvalue + indentstart + indent + indentend + nowStr;
             }
             else
             {
-                returnvalue = returnvalue + dkey + indentdic + nowStr;
+                returnvalue = returnvalue + indentstart + indent + indentend + dkey + indentdic + nowStr;
             }
             return returnvalue;
         }
