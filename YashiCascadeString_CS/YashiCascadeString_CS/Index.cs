@@ -43,6 +43,10 @@ namespace YashiCascadeString_CS
                     Dictionary<string,Object> r = g.start();
                     Console.WriteLine(r);
                 }
+                else
+                {
+                    Console.WriteLine(this.GetType().Assembly.Location);
+                }
             }
         }
         private string MergeParameter()
