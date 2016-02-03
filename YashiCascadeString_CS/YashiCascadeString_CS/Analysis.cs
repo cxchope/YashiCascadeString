@@ -10,10 +10,10 @@ namespace YashiCascadeString_CS
     class Analysis
     {
         /*
-        YashiCascadeString_CS --analysis YCSDF10000[]:@[2::rootArray][2]1[3:A]AA[3:B]BB[3:C]CC[4::arr2][4]1[4]2[4]3[4]4[3:D]DD[2]2[3::][3]1[3]2[3]3[3]4[3::][3]1[3]2[3]3[3]4@
+        YashiCascadeString_CS --analysis YCSDF10000[]:@[2::rootArray][2-1]1[3-1:A]AA[3:B]BB[3:C]CC[4::arr2][4]1[4]2[4]3[4]4[3:D]DD[2]2[3::][3]1[3]2[3]3[3]4[3::][3]1[3]2[3]3[3]4@
 
 YCSDF10000[]:@
---[2]rootArray(Array):
+-[2]rootArray(Array):
 --[2]1
 ---[3]A:AA
 ---[3]B:BB
@@ -25,7 +25,7 @@ YCSDF10000[]:@
 ----[4]4
 ---[3]D:DD
 --[2]2
----[3](Array):
+--[3](Array):
 ---[3]1
 ---[3]2
 ---[3]3
@@ -42,6 +42,9 @@ YCSDF10000[]:@
         public string indentstart = "[";
         public string indentend = "]";
         public string indentdic = ":";
+
+        private ArrayList nowObjs = new ArrayList();
+
 
         public Dictionary<string, Object> start()
         {
@@ -111,7 +114,77 @@ YCSDF10000[]:@
                 cindent = nowindent - oldindent;
                 oldindent = nowindent;
                 Console.WriteLine("当前数据=" + nowunit + ", 当前缩进=" + nowindent + ", 缩进差异=" + cindent + ", 数据类型=" + nowtype + ", 键=" + nowkey + ", 值=" + nowValue);
+                convertthis(nowunit, nowindent, cindent, nowtype, nowkey, nowValue);
+
+                /*
+
+            012
+            123
+
+                */
+
             }
+        }
+        
+        private void convertthis(string nowunit, int nowindent, int cindent, int nowtype, string nowkey, string nowValue)
+        {
+            int nowindentc = nowindent - nowObjs.Count; //计算要填充未知的量
+            if (nowindentc > 0) //如果请求位数数组长度不够
+            {
+                //Console.WriteLine("填充未知级别 (" + nowindentc + ").");
+                for (int nowindentci = 0; nowindentci < nowindentc; nowindentci++) //填充未知的量
+                {
+                    nowObjs.Add(new object());
+                }
+            }
+            if (cindent < 0)
+            {
+                int nowindentAbs = Math.Abs(nowindent); //层级变化量绝对值:要向上级提交的次数
+                for (int nowindentAbsi = 0; nowindentAbsi < nowindentAbs; nowindentAbsi++) //向上级提交
+                {
+                    //获得上级
+                    int nowObjsn = nowindent - 1 - nowindentAbsi;
+                    object nowObj = nowObjs[nowObjsn];
+                    Type nowType = nowObj.GetType();
+                    if (nowType == typeof(ArrayList))
+                    {
+                        ArrayList nowObjArr = (ArrayList)nowObj;
+                    }
+                    else if (nowType == typeof(Dictionary<string, Object>))
+                    {
+                        Dictionary<string, Object> nowObjDic = (Dictionary<string, Object>)nowObj;
+                    }
+                }
+            }
+            else if(cindent > 0)
+            {
+
+            }
+            else
+            {
+
+            }
+            /*
+            if (nowindent != 0) //如果层级有变化
+            {
+                int abs = Math.Abs(nowindent); //层级变化量绝对值
+                abs--; //层级变化量绝对值-1
+                if (nowindent < 0)
+                {
+                    nowindent = 0 - abs;
+                    //return回上一级
+                }
+                else
+                {
+                    nowindent = abs;
+                    //new出下一级并添加数据
+                }
+            }
+            else
+            {
+                //当前级添加数据
+            }
+            */
         }
 
         public int check()
