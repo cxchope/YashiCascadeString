@@ -67,11 +67,10 @@ YCSDF10000[]:@
             int oldindent = 0;
             for (int i = 1; i < units.Length; i++)
             {
-                string nowunit = units[i];
-                Console.WriteLine(nowunit);
-                int nowmode = 0; //当前字段位置
+                string nowunit = units[i]; //当前数据条目
                 int nowtype = 0; //0数组 1字典 2字符串
                 int nowindent = 0; //缩进
+                int cindent = 0; //缩进差异
 
                 string nowkey = ""; //key
                 string nowValue = ""; //value
@@ -86,7 +85,7 @@ YCSDF10000[]:@
                     string[] keyvalue = keyvaluestr.Split(indentend.ToCharArray()[0]);
                     nowkey = keyvalue[0];
                     nowValue = keyvalue[1];
-                    Console.WriteLine("字典 " + nowkey + " " + nowValue);
+                    //Console.WriteLine("字典 " + nowkey + " " + nowValue);
                 }
                 else if(colon.Length == 3) //数组声明
                 {
@@ -94,7 +93,7 @@ YCSDF10000[]:@
                     nowindent = int.Parse(colon[0]); //缩进
                     string v = colon[2];
                     nowkey = v.Substring(0, v.Length - 1);
-                    Console.WriteLine("数组 " + nowkey);
+                    //Console.WriteLine("数组 " + nowkey);
                 }
                 else if (colon.Length == 1) //字符串
                 {
@@ -102,12 +101,16 @@ YCSDF10000[]:@
                     string[] indentvalue = nowunit.Split(indentend.ToCharArray()[0]);
                     nowindent = int.Parse(indentvalue[0]);
                     nowValue = indentvalue[1];
-                    Console.WriteLine("字符串 " + nowValue);
+                    //Console.WriteLine("字符串 " + nowValue);
                 }
                 else
                 {
-                    Console.WriteLine("YCSDF ERROR -7 (" + colon.Length + ").");
+                    Console.WriteLine("YCSDF ERROR -7 (" + colon.Length + ")."); //数据条目拆分失败
                 }
+
+                cindent = nowindent - oldindent;
+                oldindent = nowindent;
+                Console.WriteLine("当前数据=" + nowunit + ", 当前缩进=" + nowindent + ", 缩进差异=" + cindent + ", 数据类型=" + nowtype + ", 键=" + nowkey + ", 值=" + nowValue);
             }
         }
 
