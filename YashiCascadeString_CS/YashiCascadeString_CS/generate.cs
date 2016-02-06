@@ -87,7 +87,8 @@ namespace YashiCascadeString_CS
             }
             else
             {
-                Console.Write("Convert Error: Unkown Type.\nPlease using string/Dictionary/ArrayList type.");
+                Console.WriteLine("输入数据类型不正确。不支持 " + nowType.Name + " | " + (int)cObj);
+                //Console.WriteLine("Convert Error: Unkown Type.\nPlease using string/Dictionary/ArrayList type.");
             }
         }
 

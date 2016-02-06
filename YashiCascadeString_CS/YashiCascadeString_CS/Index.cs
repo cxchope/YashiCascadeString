@@ -41,7 +41,12 @@ namespace YashiCascadeString_CS
                     Analysis g = new Analysis();
                     g.instring = val;
                     Dictionary<string,Object> r = g.start();
-                    Console.WriteLine(r);
+                    Console.WriteLine("analysis " + r.Count);
+
+                    Generate b = new Generate();
+                    b.indic = r;
+                    b.formatoutput = false;
+                    Console.WriteLine(b.start());
                 }
                 else
                 {
