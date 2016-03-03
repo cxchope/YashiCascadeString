@@ -12,7 +12,7 @@ namespace YashiCascadeString_CS
         private string returnvalue;
         public object indata;
         public string indentObj = "#";
-        public string indentUnit = "^";
+        public string indentUnit = ",";
         public string indentGoto = "~";
         public string indentArr = "A";
         public string indentDic = "D";
