@@ -29,24 +29,21 @@ namespace YashiCascadeString_CS
                 {
                     Generate g = new Generate();
                     Demo d = new Demo();
-                    g.indic = d.test1();
-                    if (args[1] == "1")
-                    {
-                        g.formatoutput = true;
-                    }
+                    g.indata = d.test1();
                     Console.WriteLine(g.start());
                 }
                 else if (args[0] == "--analysis") //String->Array
                 {
                     Analysis g = new Analysis();
                     g.instring = val;
-                    Dictionary<string,Object> r = g.start();
-                    Console.WriteLine("analysis " + r.Count);
+                    g.start();
+                    //Dictionary<string,Object> r = g.start();
+                    //Console.WriteLine("analysis " + r.Count);
 
-                    Generate b = new Generate();
-                    b.indic = r;
-                    b.formatoutput = false;
-                    Console.WriteLine(b.start());
+                    //Generate b = new Generate();
+                    //b.indata = r;
+                    //b.formatoutput = false;
+                    //Console.WriteLine(b.start());
                 }
                 else
                 {

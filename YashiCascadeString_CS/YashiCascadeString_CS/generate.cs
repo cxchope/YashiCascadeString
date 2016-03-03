@@ -10,112 +10,87 @@ namespace YashiCascadeString_CS
     class Generate
     {
         private string returnvalue;
-        public Dictionary<string, Object> indic;
-        public string indentstart = "[";
-        public string indentend = "]";
-        public string indentdic = ":";
+        public object indata;
+        public string indentObj = "#";
+        public string indentUnit = "^";
+        public string indentGoto = "~";
+        public string indentArr = "A";
+        public string indentDic = "D";
         public bool formatoutput = false;
-
-        int indent = 0; //缩进级别
+        private int iID = 0;
 
         public string start()
         {
-            returnvalue = pre(); //创建头
-            string[] keys = indic.Keys.ToArray();
-            indent = 0; //缩进级别
-            convert(indic, "main");
-            return returnvalue + "@";
+            Console.WriteLine("开始创建...");
+            iID = 0;
+            convert(indata);
+            returnvalue = pre() + returnvalue;
+            return returnvalue;
         }
         
-        private void convert(Object cObj, string dkey)
+        private string convert(object uObj)
         {
-            Type nowType = cObj.GetType();
-            if (nowType == typeof(ArrayList))
+            int uID = iID;
+            string uStr = uID.ToString();
+            if (uObj is string)
             {
-                indent++;
-                ArrayList nowArr = (ArrayList)cObj;
-                for (int j = 0; j < nowArr.Count; j++)
-                {
-                    if (j == 0)
-                    {
-                        if (formatoutput)
-                        {
-                            string ns = dkey;
-                            returnvalue += format(ns+"(Array):", null);
-                        }
-                        else
-                        {
-                            returnvalue = returnvalue + indentstart + indent + indentdic + indentdic + dkey + indentend;
-                        }
-                    }
-                    Object childObj = nowArr[j];
-                    convert(childObj, null);
-                }
-                indent--;
+                string objString = (string)uObj;
+                uStr = uStr + indentUnit + objString;
             }
-            else if (nowType == typeof(Dictionary<string, Object>))
+            else if(uObj is ArrayList)
             {
-                indent++;
-                Dictionary<string, Object> nowDic = (Dictionary<string, Object>)cObj;
-                string[] nowDicKeys = nowDic.Keys.ToArray();
-                for (int j = 0; j < nowDicKeys.Length; j++)
+                uStr = uStr + indentUnit + indentArr;
+                ArrayList objArray = (ArrayList)uObj;
+                for (int i = 0; i < objArray.Count; i++)
                 {
-                    string childKey = nowDicKeys[j];
-                    Object childObj = nowDic[childKey];
-                    convert(childObj, childKey);
-                }
-                indent--;
-            }
-            else if (nowType == typeof(string))
-            {
-                string nowStr = (string)cObj;
-                if (formatoutput)
-                {
-                    returnvalue += format(nowStr, dkey);
-                }
-                else
-                {
-                    if (dkey == null)
+                    object tObj = objArray[i];
+                    if (tObj is string)
                     {
-                        returnvalue = returnvalue + indentstart + indent + indentend + nowStr;
+                        uStr = uStr + indentUnit + (string)tObj;
                     }
                     else
                     {
-                        returnvalue = returnvalue + indentstart + indent + indentdic + dkey + indentend + nowStr;
+                        iID++;
+                        uStr = uStr + indentUnit + indentGoto + iID;
+                        convert(tObj);
+                    }
+                }
+            }
+            else if (uObj is Dictionary<string, Object>)
+            {
+                uStr = uStr + indentUnit + indentDic;
+                Dictionary<string, Object> objDictionary = (Dictionary<string, Object>)uObj;
+                string[] objKey = objDictionary.Keys.ToArray();
+                for (int i = 0; i < objKey.Length; i++)
+                {
+                    string nowKey = objKey[i];
+                    object tObj = objDictionary[nowKey];
+                    if (tObj is string)
+                    {
+                        uStr = uStr + indentUnit + nowKey + indentUnit + (string)tObj;
+                    }
+                    else
+                    {
+                        iID++;
+                        uStr = uStr + indentUnit + nowKey + indentUnit + indentGoto + iID;
+                        convert(tObj);
                     }
                 }
             }
             else
             {
-                Console.WriteLine("输入数据类型不正确。不支持 " + nowType.Name + " | " + (int)cObj);
-                //Console.WriteLine("Convert Error: Unkown Type.\nPlease using string/Dictionary/ArrayList type.");
+                Console.WriteLine("错误：输入数据类型错误");
             }
+            uStr = uStr + indentObj;
+            returnvalue = uStr + returnvalue;
+            return null;
         }
 
         //创建头
         private string pre()
         {
-            //5位格式代码，5位版本代码，1位缩进起始标记，1位缩进结束标记，1位区分标记
-            return "YCSDF10000" + indentstart + indentend + indentdic + "@";
-        }
-
-        private string format(string nowStr, string dkey)
-        {
-            //return returnvalue + indentstart + indent + indentend + nowStr;
-            string returnvalue = "\n";
-            for (int i = 0; i < indent; i++)
-            {
-                returnvalue += "-";
-            }
-            if (dkey == null)
-            {
-                returnvalue = returnvalue + indentstart + indent + indentend + nowStr;
-            }
-            else
-            {
-                returnvalue = returnvalue + indentstart + indent + indentend + dkey + indentdic + nowStr;
-            }
-            return returnvalue;
+            //5位格式描述代码，1位变体代码，2位HEX版本代码，2位HEX模式代码，1位数组标记，1位字典标记，1位缩进起始标记，1位缩进结束标记，1位区分标记
+            return "YCSDFA0101" + indentArr + indentDic + indentUnit + indentGoto + indentObj;
         }
     }
 }
