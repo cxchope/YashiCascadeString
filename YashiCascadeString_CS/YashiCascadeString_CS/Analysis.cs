@@ -13,20 +13,21 @@ namespace YashiCascadeString_CS
         YashiCascadeString_CS --analysis YCSDFA0101AD,~#0,D,rootArray,~1#1,A,1,~2,2,~4,~5#5,A,1,2,3,4#4,A,1,2,3,4#2,D,A,AA,B,BB,C,CC,arr2,~3,D,DD#3,A,1,2,3,4#
         */
 
-        private Dictionary<string, Object> returnvalue = new Dictionary<string, Object>();
+        private object returnvalue = null;
         public string instring;
         public string indentObj = "#";
         public string indentUnit = ",";
         public string indentGoto = "~";
         public string indentArr = "A";
         public string indentDic = "D";
+        public bool debug = false;
+        Dictionary<string, string[]> rootdic = new Dictionary<string, string[]>();
 
         private ArrayList tmpObjs = new ArrayList();
 
-        public Dictionary<string, Object> start()
+        public object start()
         {
-            //Console.WriteLine("String=" + instring);
-            //str.Substring(start-1, length)
+            if (debug == true) Console.WriteLine("\n开始解析...");
             int bchk = check();
             if (bchk < 0)
             {
@@ -36,7 +37,7 @@ namespace YashiCascadeString_CS
             {
                 try
                 {
-                    returnvalue = (Dictionary<string, Object>)convert(instring.Substring(15, instring.Length - 16));
+                    returnvalue = convert(instring.Substring(15, instring.Length - 16));
                 }
                 catch(Exception e)
                 {
@@ -49,14 +50,13 @@ namespace YashiCascadeString_CS
             {
                 Console.WriteLine("YCSDF ERROR : returnvalue == null");
             }
+            if (debug == true) Console.WriteLine("解析完成。");
             return returnvalue;
         }
 
         //step1
         private object convert(string datastr)
         {
-            Console.WriteLine("datastr : "+ datastr);
-            Dictionary<string, string[]> rootdic = new Dictionary<string, string[]>();
             string[] units = datastr.Split(indentObj.ToCharArray()[0]);
             for (int i = 0; i < units.Length; i++)
             {
@@ -65,16 +65,19 @@ namespace YashiCascadeString_CS
                 string key = objs[0];
                 rootdic.Add(key, objs);
             }
-            return convert2(rootdic, "0");
+            return convert2("0");
         }
 
-        private object convert2(Dictionary<string, string[]> rootdic, string uID)
+        private object convert2(string uID)
         {
+            if (debug == true) Console.WriteLine("解析块 " + uID + " ...");
             string[] objs = rootdic[uID];
             string unitID = objs[0];
             string type = objs[1];
             if (type.Equals(indentDic))
             {
+                if (debug == true) Console.WriteLine("创建字典...");
+                Dictionary<string, object> eDic = new Dictionary<string, object>();
                 string tmpKey = "";
                 bool isKey = false;
                 for (int i = 2; i < objs.Length; i++)
@@ -87,20 +90,44 @@ namespace YashiCascadeString_CS
                     else
                     {
                         string tmpVal = objs[i];
-                        //断点
+                        if (tmpVal.Substring(0,1).Equals(indentGoto))
+                        {
+                            string gotoSubID = tmpVal.Substring(1, tmpVal.Length - 1);
+                            object childObj = convert2(gotoSubID);
+                            if (debug == true) Console.WriteLine("添加字典条目 " + tmpKey + ":<对象> ...");
+                            eDic.Add(tmpKey, childObj);
+                        }
+                        else
+                        {
+                            if (debug == true) Console.WriteLine("添加字典条目 " + tmpKey + ":" + tmpVal + " ...");
+                            eDic.Add(tmpKey, tmpVal);
+                        }
                     }
                 }
+                return eDic;
             }
             else if (type.Equals(indentArr))
             {
+                if (debug == true) Console.WriteLine("创建数组...");
+                ArrayList eArr = new ArrayList();
                 for (int i = 2; i < objs.Length; i++)
                 {
-                    string nowobj = objs[i];
-                    Console.WriteLine("nowobj : " + nowobj);
+                    string tmpVal = objs[i];
+                    if (tmpVal.Substring(0, 1).Equals(indentGoto))
+                    {
+                        string gotoSubID = tmpVal.Substring(1, tmpVal.Length - 1);
+                        object childObj = convert2(gotoSubID);
+                        if (debug == true) Console.WriteLine("添加数组条目 <对象> ...");
+                        eArr.Add(childObj);
+                    }
+                    else
+                    {
+                        if (debug == true) Console.WriteLine("添加数组条目 " + tmpVal + " ...");
+                        eArr.Add(tmpVal);
+                    }
                 }
+                return eArr;
             }
-
-            
             return null;
         }
 
@@ -134,15 +161,18 @@ namespace YashiCascadeString_CS
                 }
                 string ss = instring.Substring(10, 5);
                 indentArr = ss.Substring(0, 1);
-                Console.WriteLine("数组标识符 = " + indentArr);
                 indentDic = ss.Substring(1, 1);
-                Console.WriteLine("字典标识符 = " + indentDic);
                 indentUnit = ss.Substring(2, 1);
-                Console.WriteLine("对象分隔符 = " + indentUnit);
                 indentGoto = ss.Substring(3, 1);
-                Console.WriteLine("跳转符 = " + indentGoto);
                 indentObj = ss.Substring(4, 1);
-                Console.WriteLine("块分隔符 = " + indentObj);
+                if (debug == true)
+                {
+                    Console.WriteLine("数组标识符 = " + indentArr);
+                    Console.WriteLine("字典标识符 = " + indentDic);
+                    Console.WriteLine("对象分隔符 = " + indentUnit);
+                    Console.WriteLine("跳转符 = " + indentGoto);
+                    Console.WriteLine("块分隔符 = " + indentObj);
+                }
             }
             catch
             {

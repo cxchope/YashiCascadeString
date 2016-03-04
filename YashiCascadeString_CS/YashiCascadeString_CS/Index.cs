@@ -12,13 +12,14 @@ namespace YashiCascadeString_CS
         public string[] args = null;
         private string mode = "";
         private string val = "";
+        private int testi = 0;
 
         //YashiCascadeString_CS --analysis YCSDF10000[]:@[2::rootArray][2]1[3:A]AA[3:B]BB[3:C]CC[4::arr2][4]1[4]2[4]3[4]4[3:D]DD[2]2[3::][3]1[3]2[3]3[3]4[3::][3]1[3]2[3]3[3]4@
 
         public void start()
         {
             String name = "Yashi Cascade String Data Format";
-            if (args.Length > 1)
+            if (args.Length > 0)
             {
                 Console.Clear();
                 mode = args[0];
@@ -30,20 +31,29 @@ namespace YashiCascadeString_CS
                     Generate g = new Generate();
                     Demo d = new Demo();
                     g.indata = d.test1();
-                    Console.WriteLine(g.start());
+                    object returnValue = g.start();
+                    Console.WriteLine(returnValue);
                 }
                 else if (args[0] == "--analysis") //String->Array
                 {
-                    Analysis g = new Analysis();
-                    g.instring = val;
-                    g.start();
-                    //Dictionary<string,Object> r = g.start();
-                    //Console.WriteLine("analysis " + r.Count);
+                    Analysis a = new Analysis();
+                    a.instring = val;
+                    a.debug = true;
+                    object returnValue = a.start();
 
-                    //Generate b = new Generate();
-                    //b.indata = r;
-                    //b.formatoutput = false;
-                    //Console.WriteLine(b.start());
+                    Generate g = new Generate();
+                    g.indata = returnValue;
+                    g.debug = true;
+                    string returnValue2 = (string)g.start();
+                }
+                else if (args[0] == "--test")
+                {
+                    Demo d = new Demo();
+                    object obj = d.test1();
+                    for (int i = 0; i < 100; i++)
+                    {
+                        obj = test(obj);
+                    }
                 }
                 else
                 {
@@ -51,6 +61,19 @@ namespace YashiCascadeString_CS
                 }
             }
         }
+
+        private object test(object obj)
+        {
+            Generate g = new Generate();
+            g.indata = obj;
+            string returnValue2 = (string)g.start();
+            Console.WriteLine(returnValue2);
+
+            Analysis a = new Analysis();
+            a.instring = returnValue2;
+            return a.start();
+        }
+
         private string MergeParameter()
         {
             string returnValue = "";
